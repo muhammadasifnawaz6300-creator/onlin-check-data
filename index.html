@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Tracker — </title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:#182230}
+header{background:linear-gradient(135deg,#0b5cff,#153b8f);color:#fff;padding:22px 18px}
+.container{max-width:1050px;margin:auto}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.logo{font-size:24px;font-weight:800}
+.badge{background:#ffffff22;border:1px solid #ffffff44;padding:7px 11px;border-radius:20px;font-size:12px}
+.hero{text-align:center;padding:45px 15px 35px}
+.hero h1{font-size:38px;margin:0 0 12px}
+.hero p{margin:0 auto;max-width:700px;color:#e9efff;line-height:1.6}
+.card{background:#fff;border-radius:18px;box-shadow:0 10px 35px #1b31541a;padding:25px;margin:-5px auto 28px;max-width:900px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.tab{border:1px solid #d8e0eb;background:#f8fafc;padding:10px 15px;border-radius:10px;cursor:pointer;font-weight:700}
+.tab.active{background:#0b5cff;color:white;border-color:#0b5cff}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+label{font-size:13px;font-weight:700;display:block;margin-bottom:7px}
+input,select{width:100%;padding:13px;border:1px solid #d5dce7;border-radius:10px;font-size:15px;outline:none}
+input:focus,select:focus{border-color:#0b5cff;box-shadow:0 0 0 3px #0b5cff18}
+.actions{display:flex;gap:10px;margin-top:17px}
+button{border:0;border-radius:10px;padding:13px 18px;font-weight:800;cursor:pointer}
+.primary{background:#0b5cff;color:#fff;flex:1}
+.secondary{background:#eef2f7;color:#263445}
+.note{font-size:12px;color:#667085;margin-top:12px;line-height:1.5}
+.result{display:none;margin-top:22px;border:1px solid #dce4ef;border-radius:14px;padding:18px;background:#fbfdff}
+.result h3{margin:0 0 14px}
+.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.item{background:#f3f6fa;border-radius:10px;padding:11px}
+.item small{display:block;color:#667085;margin-bottom:4px}
+.status{color:#087443;font-weight:800}
+footer{text-align:center;color:#667085;padding:25px 15px;font-size:13px}
+@media(max-width:700px){.grid,.result-grid{grid-template-columns:1fr}.hero h1{font-size:30px}.nav{align-items:flex-start}.card{margin:0 12px 25px}.hero{padding:35px 15px}}
+</style>
+</head>
+<script src="data.js"></script>
+<body>
+<header>
+  <div class="container">
+    <div class="nav">
+      <div class="logo">Search Tracker</div>
+      <div class="badge"> / SAMPLE DATA</div>
+    </div>
+    <div class="hero">
+      <h1>Search & Record </h1>
+      <p>Search a sample record using a mobile number, CNIC number, or date. This standalone  access telecom, CNIC, GPS, or private databases.</p>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+<section class="card">
+  <div class="tabs">
+    <button class="tab active" onclick="setMode('mobile',this)">Mobile</button>
+    <button class="tab" onclick="setMode('reference',this)">CNIC</button>
+    <button class="tab" onclick="setMode('date',this)">Date</button>
+  </div>
+
+  <div id="mobileBox" class="grid">
+    <div>
+      <label>Mobile Number</label>
+      <input id="mobile" placeholder="03XX-XXXXXXX" maxlength="13">
+    </div>
+    <div>
+      <label>Year</label>
+      <select id="year"></select>
+    </div>
+    <div>
+      <label>Month</label>
+      <select id="month"></select>
+    </div>
+  </div>
+
+  <div id="referenceBox" class="grid" style="display:none">
+    <div>
+      <label>CNIC Number</label>
+      <input id="reference" placeholder="DEMO-1001">
+    </div>
+    <div>
+      <label>Year</label>
+      <select id="refYear"></select>
+    </div>
+    <div>
+      <label>Month</label>
+      <select id="refMonth"></select>
+    </div>
+  </div>
+
+  <div id="dateBox" class="grid" style="display:none">
+    <div>
+      <label>From Date</label>
+      <input id="fromDate" type="date" min="2000-01-01" max="2026-07-31">
+    </div>
+    <div>
+      <label>To Date</label>
+      <input id="toDate" type="date" min="2000-01-01" max="2026-07-31">
+      <input id="toDate" type="date" min="2000-01-01" max="2026-07-31">
+    </div>
+    <div>
+      <label>Record Type</label>
+      <select id="recordType">
+        <option>Sample Record</option>
+        <option> Activity</option>
+        <option>Test Entry</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" onclick="searchDemo()">Search  Record</button>
+    <button class="secondary" onclick="resetForm()">Reset</button>
+  </div>
+
+  <div class="note">
+    Available date range: <b>1 January 2000 through 31 July 2026</b>.
+    All results shown by this page are locally generated sample/demo data.
+  </div>
+
+  <div id="result" class="result">
+    <h3> Result</h3>
+    <div class="result-grid">
+      <div class="item"><small>CNIC</small><b id="rRef">—</b></div>
+      <div class="item"><small>Input</small><b id="rInput">—</b></div>
+      <div class="item"><small>Date</small><b id="rDate">—</b></div>
+      <div class="item"><small>Status</small><span class="status">Sample / Demo</span></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  © 2026 Search Tracker ·  private or real-world database access
+</footer>
+
+<script>
+const years = document.getElementById('year');
+const refYear = document.getElementById('refYear');
+const month = document.getElementById('month');
+const refMonth = document.getElementById('refMonth');
+ 
+function fillYears(select){
+  select.innerHTML = '<option value="">Select year</option>';
+  for(let y=2026;y>=2000;y--){
+    select.insertAdjacentHTML('beforeend', `<option value="${y}">${y}</option>`);
+  }
+}
+function fillMonths(select){
+  select.innerHTML = '<option value="">Select month</option>';
+  const names=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  names.forEach((m,i)=>{
+    const disabled = (select.id==='month'||select.id==='refMonth') ? false : false;
+    select.insertAdjacentHTML('beforeend', `<option value="${i+1}">${m}</option>`);
+  });
+}
+fillYears(years); fillYears(refYear); fillMonths(month); fillMonths(refMonth);
+
+function setMode(mode,btn){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('mobileBox').style.display=mode==='mobile'?'grid':'none';
+  document.getElementById('referenceBox').style.display=mode==='reference'?'grid':'none';
+  document.getElementById('dateBox').style.display=mode==='date'?'grid':'none';
+  document.getElementById('result').style.display='none';
+}
+
+function search(){
+  const ref='real-'+Math.floor(1000+Math.random()*9000);
+  let input='real- search';
+  let date='2026-07-31';
+
+  if(document.getElementById('mobileBox').style.display!=='none'){
+    input=document.getElementById('mobile').value.trim() || 'Sample Mobile';
+    const y=years.value || '2026';
+    const m=month.value || '7';
+    date=`${y}-${String(m).padStart(2,'0')}-01`;
+  }else if(document.getElementById('referenceBox').style.display!=='none'){
+    input=document.getElementById('reference').value.trim() || 'DEMO-1001';
+    const y=refYear.value || '2026';
+    const m=refMonth.value || '7';
+    date=`${y}-${String(m).padStart(2,'0')}-01`;
+  }else{
+    input=document.getElementById('recordType').value;
+    date=document.getElementById('fromDate').value || '2026-07-31';
+  }
+
+  document.getElementById('rRef').textContent=ref;
+  document.getElementById('rInput').textContent=input;
+  document.getElementById('rDate').textContent=date;
+  document.getElementById('result').style.display='block';
+}
+
+function resetForm(){
+  document.querySelectorAll('input').forEach(i=>i.value='');
+  document.querySelectorAll('select').forEach(s=>s.selectedIndex=0);
+  document.getElementById('result').style.display='none';
+}
+</script>
+</body>
+</html>
